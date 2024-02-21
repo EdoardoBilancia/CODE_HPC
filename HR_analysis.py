@@ -26,9 +26,6 @@ data = {}
 
 import logging    # first of all import the module
 
-logging.basicConfig(filename='execution.log', filemode='a', format='%(name)s - %(levelname)s - %(message)s')
-logging.warning('Start of A new execution')
-
 
 plt.style.use("seaborn-v0_8-colorblind")
 plt.rcParams.update({'font.size': 12,'figure.autolayout': True})
@@ -72,6 +69,8 @@ segment_time_SB = {
     #'LS270721' : [[2560,2800],[2801,2900]]
 }
 
+#create a directory to store all the plots and the results
+
 
 first_key = list(segment_time_SB.keys())[0]
 SB_data, fs = MLfunctions_2.load_and_preprocess_HR(str(first_key), segment_time_SB[first_key],directory)
@@ -85,9 +84,17 @@ uNG_types = ["RMS_040","RMS_400","RMS_1500"] #this will be the input
 data_ECG = "data_ECG" #this will be the target
 
 neurokit_fitler = False
-window_size = 0.05  # Window size in seconds
-overlap_percentage = 95  # Overlap percentage between windows
+window_size = 0.5  # Window size in seconds
+overlap_percentage = 50  # Overlap percentage between windows
 N_past = 15  # Number of past samples to consider for the features
+
+store_directory = "Results" + "/" + sub + "/"
+os.makedirs(store_directory)
+
+# Set up the logger
+logging.basicConfig(filename=store_directory + 'execution.log', filemode='a', format='%(name)s - %(levelname)s - %(message)s')
+logging.warning('Start of A new execution')
+
 
 logging.warning("subject: " + sub)
 logging.warning("time interval: " + str(segment_time_SB[first_key]) + " seconds")
@@ -119,7 +126,7 @@ for i, uNG_type in enumerate(uNG_types):
 
 
 plt.suptitle(str(segment_time_SB[first_key]) + " Post-processed data train " + sub)
-plt.savefig("Input singals " + sub + ".png")
+plt.savefig(store_directory + "Input singals " + sub + ".png")
 
 """ fig,ax = plt.subplots(2,1,figsize=(10,5))
 ax[0].plot(SB_data[subj]["t_uNG"],SB_data[subj][data_ECG],label = data_ECG,zorder = 10)
@@ -207,7 +214,7 @@ ax[1].set_ylabel("Normalized amplitude")
 ax[0].spines[['top','right']].set_visible(False)
 ax[1].spines[['top','right']].set_visible(False)
 plt.suptitle("Target vs Respiration original signal")
-plt.savefig("Target vs Respiration original signal " + sub + ".png")
+plt.savefig(store_directory + "Target vs Respiration original signal " + sub + ".png")
 
 concat_T,indexes_unique = np.unique(np.hstack(subportions_time),return_index=True)
 concat_Y = np.hstack(subportions_target)[indexes_unique]
@@ -230,7 +237,8 @@ logging.warning("Number of observations Test: " + str(features_test.shape[0]))
 model= lgb.LGBMRegressor(verbose = -1,
                         random_state=0,
                         objective="regression", 
-                        scoring="r2")
+                        scoring="r2",
+                        device="gpu",)
 
 model.fit(features, target,feature_name=feature_names)
 
@@ -269,6 +277,7 @@ def create_model(trial):
         "n_jobs": -1,
         "random_state": 0,
         "verbose": -1,
+        "device": "gpu",
     }
 
 
@@ -308,7 +317,7 @@ ax = optuna.visualization.matplotlib.plot_optimization_history(study)
 plt.gca().set_xlabel("Number of trials")
 plt.gca().set_ylabel("RMSE")
 plt.suptitle("Optimization history " + sub)
-plt.savefig("Optimization history " + sub + ".png")
+plt.savefig(store_directory + "Optimization history " + sub + ".png")
 
 logging.warning("RMSE_score_test_unoptimized: ", RMSE_score_unoptimized)
 logging.warning("R2_score_test_unoptimized: ", R2_score_unoptimized)
@@ -320,7 +329,7 @@ logging.warning("R2_score_test_optimized: ", r2_score(target_test,target_pred))
 #plot the feature importance
 fig,ax = plt.subplots(1,1,figsize=(100,100))
 lgb.plot_importance(best_model,ax=ax)
-plt.savefig("Feature importance " + sub + ".png")
+plt.savefig(store_directory + "Feature importance " + sub + ".png")
 # %%
 interp = interpolate.interp1d(concat_T,concat_Y,bounds_error=None,fill_value = "extrapolate")
 concat_Y = np.array(interp(SB_data[subj]["t_uNG"])).squeeze()
@@ -358,7 +367,7 @@ ax.set_xlabel("Time [s]")
 ax.set_ylabel("Normalized amplitude")
 ax.legend()
 plt.suptitle("Test Results " + sub)
-plt.savefig("Test Results " + sub + ".png")
+plt.savefig(store_directory + "Test Results " + sub + ".png")
 
 #MLfunctions_2.metrics_resp(concat_Y_test,concat_X_test,interpolated_predicts,concat_T_test,fs,target_test,predicts)
 #plt.suptitle("Test Results")
@@ -386,7 +395,7 @@ ax.set_xlabel("Time [s]")
 ax.set_ylabel("Normalized amplitude")
 ax.legend()
 plt.suptitle("Train Results " + sub)
-plt.savefig("Train Results " + sub + ".png")
+plt.savefig(store_directory + "Train Results " + sub + ".png")
 
 logging.shutdown()
 
