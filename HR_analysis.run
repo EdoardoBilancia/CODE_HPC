@@ -2,11 +2,11 @@
 
 #SBATCH --job-name=Edoardo_test
 #SBATCH --account=master
-#SBATCH --nodes=1
+#SBATCH --nodes=4
+#SBATCH --ntasks-per-node 32
 #SBATCH --time 1:0:0
 
 module purge
-
 source $HOME/venvs/venv-Edoardo-test/bin/activate
 
 srun python HR_analysis.py 3
