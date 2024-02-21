@@ -1,5 +1,4 @@
 import numpy as np
-from pactools.grid_search import GridSearchCVProgressBar
 import MLfunctions
 import scipy.io
 import os
@@ -244,7 +243,7 @@ def load_and_preprocess_HR(subject,times,directory):
     data = {}
     for file in os.listdir(directory):
         if subject in file:
-            with open(directory +"\\" +file, 'rb') as myfile:
+            with open(directory +"/" +file, 'rb') as myfile:
                 data[subject] = (scipy.io.loadmat(myfile))
     print(subject + " loaded" + "\nIntervals: " + str(times))
     #preprocess data
@@ -316,7 +315,7 @@ def load_and_preprocess_HR(subject,times,directory):
         #peaks_belt,cleaned_resp_belt = find_respiration_peaks(data_resp,fs)
         #peaks_neg_belt, _ = find_respiration_peaks(-data_resp,fs)
 
-        b_RMS, a_RMS = signal.butter(2, np.array([0.5 , 5])/nyquist, btype="bandpass")
+        b_RMS, a_RMS = signal.butter(2, 1.5/nyquist, btype="highpass")
         #RMS_002 = signal.filtfilt(b_RMS, a_RMS, RMS_002)
         #RMS_005 = signal.filtfilt(b_RMS, a_RMS, RMS_005)
         #RMS_010 = signal.filtfilt(b_RMS, a_RMS, RMS_010)

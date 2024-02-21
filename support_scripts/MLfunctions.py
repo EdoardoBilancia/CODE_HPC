@@ -3,11 +3,9 @@ from scipy.signal import medfilt, lfilter
 from scipy import stats
 import matplotlib.pyplot as plt
 from sklearn.model_selection import train_test_split
-from imblearn.under_sampling import RandomUnderSampler
 from sklearn.utils import shuffle
 from scipy import signal
 from numpy.fft import fft, ifft
-import pywt
 
 
 def normalize(signal):
@@ -92,8 +90,8 @@ def features_extractor(data,fs):
         min_t = np.argmin(sign,keepdims = True)
         max_val = sign[max_t]
         min_val = sign[min_t]
-        skew = stats.skew(sign,keepdims = True)
-        kurt = stats.kurtosis(sign,keepdims = True)
+        skew = stats.skew(sign)
+        kurt = stats.kurtosis(sign)
         RMS = np.sqrt(np.mean(sign**2))
         var = np.var(sign)
         #find the peaks and computed the mean difference in time between them
@@ -136,8 +134,8 @@ def features_extractor_with_past(data,points_back):
         min_t = np.argmin(sign,keepdims = True)
         max_val = sign[max_t]
         min_val = sign[min_t]
-        skew = stats.skew(sign,keepdims = True)
-        kurt = stats.kurtosis(sign,keepdims = True)
+        skew = stats.skew(sign)
+        kurt = stats.kurtosis(sign)
         RMS = np.sqrt(np.mean(sign**2))
         var = np.var(sign)
         #insert in the subpoortions the past points of mean for number of points_back for each signal
@@ -178,8 +176,8 @@ def features_extractor_with_pasts(data,points_back):
         min_t = np.argmin(sign,keepdims = True)
         max_val = sign[max_t]
         min_val = sign[min_t]
-        skew = stats.skew(sign,keepdims = True)
-        kurt = stats.kurtosis(sign,keepdims = True)
+        skew = stats.skew(sign)
+        kurt = stats.kurtosis(sign)
         RMSs = np.sqrt(np.mean(sign**2))
         var = np.var(sign)
         sign_slope = np.diff(sign)
@@ -189,13 +187,13 @@ def features_extractor_with_pasts(data,points_back):
         min_t_slope = np.array(np.argmin(sign_slope,keepdims = True)).squeeze()
         max_val_slope = sign_slope[max_t_slope].squeeze()
         min_val_slope = sign_slope[min_t_slope].squeeze()
-        skew_slope = stats.skew(sign_slope,keepdims = True)[0]
-        kurt_slope = stats.kurtosis(sign_slope,keepdims = True)[0]
+        skew_slope = stats.skew(sign_slope)
+        kurt_slope = stats.kurtosis(sign_slope)
         RMS_slope = np.sqrt(np.mean(sign_slope**2))
         var_slope = np.var(sign_slope)
         #insert in the subpoortions the past points of mean for number of points_back for each signal
         #final = [mean,power,float(max_t),float(min_t),max_val[0],min_val[0],skew[0],kurt[0],RMSs,var,*past_mean,*past_power,*past_max_t,*past_min_t,*past_max_val,*past_min_val,*past_skew,*past_kurt,*past_RMS,*past_var]
-        final = [mean,power,float(max_t),float(min_t),max_val[0],min_val[0],skew[0],kurt[0],RMSs,var,mean_slope,power_slope,float(max_t_slope),float(min_t_slope),max_val_slope,min_val_slope,skew_slope,kurt_slope,RMS_slope,var_slope,*past_mean,*past_power,*past_max_t,*past_min_t,*past_max_val,*past_min_val,*past_skew,*past_kurt,*past_RMS,*past_var,*past_mean_slope,*past_power_slope,*past_max_t_slope,*past_min_t_slope,*past_max_val_slope,*past_min_val_slope,*past_skew_slope,*past_kurt_slope,*past_RMS_slope,*past_var_slope]
+        final = [mean,power,float(max_t),float(min_t),max_val[0],min_val[0],skew,kurt,RMSs,var,mean_slope,power_slope,float(max_t_slope),float(min_t_slope),max_val_slope,min_val_slope,skew_slope,kurt_slope,RMS_slope,var_slope,*past_mean,*past_power,*past_max_t,*past_min_t,*past_max_val,*past_min_val,*past_skew,*past_kurt,*past_RMS,*past_var,*past_mean_slope,*past_power_slope,*past_max_t_slope,*past_min_t_slope,*past_max_val_slope,*past_min_val_slope,*past_skew_slope,*past_kurt_slope,*past_RMS_slope,*past_var_slope]
         sotto_segnali.append(final)
         past_mean = np.roll(past_mean,-1)
         past_power = np.roll(past_power,-1)
