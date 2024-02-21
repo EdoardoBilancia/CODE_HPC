@@ -1,5 +1,4 @@
 #%%
-import tkinter as tk
 import matplotlib.pyplot as plt
 import numpy as np
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg,NavigationToolbar2Tk
@@ -7,7 +6,6 @@ import scipy.io
 import os
 from scipy import signal
 import sys
-import contextlib
 import logging
 from scipy.integrate import simps
 from scipy import interpolate
@@ -22,9 +20,6 @@ import numpy as np
 import pandas as pd
 import lightgbm as lgb
 import optuna.integration.lightgbm as lgbopt
-import pywt
-from pactools.grid_search import GridSearchCVProgressBar
-import featuretools as ft
 from sklearn.model_selection import train_test_split
 import neurokit2 as nk
 
