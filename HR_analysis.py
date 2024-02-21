@@ -27,7 +27,7 @@ data = {}
 import logging    # first of all import the module
 
 logging.basicConfig(filename='execution.log', filemode='a', format='%(name)s - %(levelname)s - %(message)s')
-logging.warning('Start of the File')
+logging.warning('Start of A new execution')
 
 
 plt.style.use("seaborn-v0_8-colorblind")
@@ -88,6 +88,14 @@ neurokit_fitler = False
 window_size = 0.5  # Window size in seconds
 overlap_percentage = 65  # Overlap percentage between windows
 N_past = 15  # Number of past samples to consider for the features
+
+logging.warning("subject: " + sub)
+logging.warning("time interval: " + str(segment_time_SB[first_key]) + " seconds")
+logging.warning("uNG_types: " + str(uNG_types))
+logging.warning("window_size: " + str(window_size))
+logging.warning("overlap_percentage: " + str(overlap_percentage))
+logging.warning("N_past: " + str(N_past))
+
 
 if neurokit_fitler:
     SB_data[subj][data_ECG] = nk.ecg_clean(SB_data[subj][data_ECG],sampling_rate=fs,method="biosppy")
