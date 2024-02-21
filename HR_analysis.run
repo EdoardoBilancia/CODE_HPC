@@ -3,7 +3,7 @@
 #SBATCH --job-name=Edoardo_test
 #SBATCH --account=master
 #SBATCH --nodes=1
-#SBATCH --time 0:10:0
+#SBATCH --time 1:0:0
 
 module purge
 

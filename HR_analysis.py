@@ -85,8 +85,8 @@ uNG_types = ["RMS_040","RMS_400","RMS_1500"] #this will be the input
 data_ECG = "data_ECG" #this will be the target
 
 neurokit_fitler = False
-window_size = 0.5  # Window size in seconds
-overlap_percentage = 65  # Overlap percentage between windows
+window_size = 0.05  # Window size in seconds
+overlap_percentage = 95  # Overlap percentage between windows
 N_past = 15  # Number of past samples to consider for the features
 
 logging.warning("subject: " + sub)
@@ -310,7 +310,6 @@ plt.gca().set_ylabel("RMSE")
 plt.suptitle("Optimization history " + sub)
 plt.savefig("Optimization history " + sub + ".png")
 
-
 logging.warning("RMSE_score_test_unoptimized: ", RMSE_score_unoptimized)
 logging.warning("R2_score_test_unoptimized: ", R2_score_unoptimized)
 logging.warning("RMSE_score_best_validation: ", study.best_value)
@@ -319,7 +318,7 @@ logging.warning("R2_score_test_optimized: ", r2_score(target_test,target_pred))
 
 
 #plot the feature importance
-fig,ax = plt.subplots(1,1,figsize=(10,5))
+fig,ax = plt.subplots(1,1,figsize=(100,100))
 lgb.plot_importance(best_model,ax=ax)
 plt.savefig("Feature importance " + sub + ".png")
 # %%
@@ -379,7 +378,7 @@ interp = interpolate.interp1d(np.array(times).squeeze(),np.array(predicts).squee
 interpolated_predicts = interp(SB_data[subj]["t_uNG"])
 #b, a = signal.butter(2, 1/(fs*0.5), btype="lowpass")
 #interpolated_predicts = signal.filtfilt(b,a,np.array(interpolated_predicts).squeeze())
-fig,ax = plt.subplots(1,1,figsize=(30,20))
+fig,ax = plt.subplots(1,1,figsize=(100,15))
 ax.plot(SB_data[subj]["t_uNG"],SB_data[subj][data_ECG],label = "ECG - normalized")
 ax.plot(SB_data[subj]["t_uNG"],interpolated_predicts,label = "Predicted ECG - normalized")
 ax.spines[['top','right']].set_visible(False)
