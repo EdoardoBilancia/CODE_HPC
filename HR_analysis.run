@@ -1,0 +1,12 @@
+#!/bin/bash -l
+
+#SBATCH --job-name=Edoardo_test
+#SBATCH --account=master
+#SBATCH --nodes=1
+#SBATCH --time 0:10:0
+
+module purge
+
+source $HOME/venvs/venv-Edoardo-test/bin/activate
+
+srun python HR_analysis.py 3

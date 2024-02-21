@@ -16,7 +16,7 @@ import sklearn.ensemble as ens
 from sklearn.metrics import r2_score,mean_squared_error
 from sklearn.model_selection import GridSearchCV, KFold, cross_val_score,cross_validate, RandomizedSearchCV, StratifiedKFold,TimeSeriesSplit
 from RangeSlider.RangeSlider import RangeSliderV
-#sys.path.append('C:/Users\\edoar\\OneDrive\\Desktop\\TESI\\codice2\\code\\pyth\\')
+sys.path.append("support_scripts/")
 import MLfunctions,MLfunctions_2
 import numpy as np
 import pandas as pd
@@ -92,8 +92,8 @@ uNG_types = ["RMS_040","RMS_400","RMS_1500"] #this will be the input
 data_ECG = "data_ECG" #this will be the target
 
 neurokit_fitler = False
-window_size = 0.05  # Window size in seconds
-overlap_percentage = 95  # Overlap percentage between windows
+window_size = 0.5  # Window size in seconds
+overlap_percentage = 65  # Overlap percentage between windows
 N_past = 15  # Number of past samples to consider for the features
 
 if neurokit_fitler:
@@ -219,9 +219,9 @@ concat_X_test = np.hstack(subportions_test_Input)[indexes_unique_test]
 #print("Number of observations: ", features.shape[0])
 #print("Number of test observations: ", features_test.shape[0])
 
-logging.info("Number of features: " + str(features.shape[1]))
-logging.info("Number of observations Train: " + str(features.shape[0]))
-logging.info("Number of observations Test: " + str(features_test.shape[0]))
+logging.warning("Number of features: " + str(features.shape[1]))
+logging.warning("Number of observations Train: " + str(features.shape[0]))
+logging.warning("Number of observations Test: " + str(features_test.shape[0]))
 
 
 #%%
@@ -298,20 +298,23 @@ optuna.logging.enable_propagation()  # Propagate logs to the root logger.
 optuna.logging.disable_default_handler()  # Stop showing logs in sys.stderr.
 logging.info("Optimizing the model")
 study = optuna.create_study(direction="minimize")
-study.optimize(objective_cv, n_trials=100, n_jobs=-1)
+study.optimize(objective_cv, n_trials=100, n_jobs=1)
 best_model = create_model(study.best_trial)
 best_model.fit(features, target,feature_name=feature_names)
 target_pred = best_model.predict(features_test)
 fig,ax = plt.subplots(1,1,figsize=(100,5))
-fig = optuna.visualization.plot_optimization_history(study)
-fig.savefig("Optimization history " + sub + ".png")
+ax = optuna.visualization.matplotlib.plot_optimization_history(study)
+plt.gca().set_xlabel("Number of trials")
+plt.gca().set_ylabel("RMSE")
+plt.suptitle("Optimization history " + sub)
+plt.savefig("Optimization history " + sub + ".png")
 
 
-logging.info("RMSE_score_test_unoptimized: ", RMSE_score_unoptimized)
-logging.info("R2_score_test_unoptimized: ", R2_score_unoptimized)
-logging.info("RMSE_score_best_validation: ", study.best_value)
-logging.info("RMSE_score_test_optimized: ", np.sqrt(mean_squared_error(target_test,target_pred)))
-logging.info("R2_score_test_optimized: ", r2_score(target_test,target_pred))
+logging.warning("RMSE_score_test_unoptimized: ", RMSE_score_unoptimized)
+logging.warning("R2_score_test_unoptimized: ", R2_score_unoptimized)
+logging.warning("RMSE_score_best_validation: ", study.best_value)
+logging.warning("RMSE_score_test_optimized: ", np.sqrt(mean_squared_error(target_test,target_pred)))
+logging.warning("R2_score_test_optimized: ", r2_score(target_test,target_pred))
 
 
 #plot the feature importance
@@ -384,4 +387,7 @@ ax.set_ylabel("Normalized amplitude")
 ax.legend()
 plt.suptitle("Train Results " + sub)
 plt.savefig("Train Results " + sub + ".png")
+
+logging.shutdown()
+
 # %%
