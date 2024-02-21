@@ -12,7 +12,6 @@ from scipy import stats
 import sklearn.ensemble as ens
 from sklearn.metrics import r2_score,mean_squared_error
 from sklearn.model_selection import GridSearchCV, KFold, cross_val_score,cross_validate, RandomizedSearchCV, StratifiedKFold,TimeSeriesSplit
-from RangeSlider.RangeSlider import RangeSliderV
 sys.path.append("support_scripts/")
 import MLfunctions,MLfunctions_2
 import numpy as np
